@@ -19,7 +19,8 @@ import dnnlib
 import dnnlib.tflib as tflib
 import config
 from encoder.generator_model import Generator
-from encoder.perceptual_model import PerceptualModel
+from encoder.perceptual_model import PerceptualModel, load_images
+from keras.models import load_model
 from keras.utils import get_file
 from ffhq_dataset.face_alignment import image_align
 from ffhq_dataset.landmarks_detector import LandmarksDetector
