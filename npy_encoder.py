@@ -67,14 +67,14 @@ def main():
   parser.add_argument('--dlatent_avg', default='', help='Use dlatent from file specified here for truncation instead of dlatent_avg from Gs')
   parser.add_argument('--model_url', default='https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ', help='Fetch a StyleGAN model to train on from this URL') # karras2019stylegan-ffhq-1024x1024.pkl
   parser.add_argument('--model_res', default=1024, help='The dimension of images in the StyleGAN model', type=int)
-  parser.add_argument('--batch_size', default=2, help='Batch size for generator and perceptual model', type=int)
+  parser.add_argument('--batch_size', default=1, help='Batch size for generator and perceptual model', type=int)
 
   #Perceptual model params
   parser.add_argument('--image_size', default=256, help='Size of images for perceptual model', type=int)
   parser.add_argument('--resnet_image_size', default=256, help='Size of images for the Resnet model', type=int)
   parser.add_argument('--lr', default=0.03, help='Learning rate for perceptual model', type=float)
   parser.add_argument('--decay_rate', default=0.9, help='Decay rate for learning rate', type=float)
-  parser.add_argument('--iterations', default=100, help='Number of optimization steps for each batch', type=int)
+  parser.add_argument('--iterations', default=1000, help='Number of optimization steps for each batch', type=int)
   parser.add_argument('--decay_steps', default=10, help='Decay steps for learning rate decay (as a percent of iterations)', type=float)
   parser.add_argument('--load_effnet', default='data/finetuned_effnet.h5', help='Model to load for EfficientNet approximation of dlatents')
   parser.add_argument('--load_resnet', default='data/finetuned_resnet.h5', help='Model to load for ResNet approximation of dlatents')
@@ -88,7 +88,7 @@ def main():
   parser.add_argument('--use_l1_penalty', default=1, help='Use L1 penalty on latents; 0 to disable, > 0 to scale.', type=float)
 
   #Generator params
-  parser.add_argument('--randomize_noise', default=True, help='Add noise to dlatents during optimization', type=bool)
+  parser.add_argument('--randomize_noise', default=False, help='Add noise to dlatents during optimization', type=bool)
   parser.add_argument('--tile_dlatents', default=False, help='Tile dlatents to use a single vector at each scale', type=bool)
   parser.add_argument('--clipping_threshold', default=2.0, help='Stochastic clipping of gradient values outside of this threshold', type=float)
 
