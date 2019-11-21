@@ -11,7 +11,7 @@ MODEL_MEAN_VALUES = (78.42633776603, 87.7689143744, 114.895847746)
 age_list = ['(0, 2)', '(4, 6)', '(8, 12)', '(15, 20)', '(25, 32)', '(38, 43)', '(48, 53)', '(60, 100)']
 gender_list = ['Male', 'Female']
 
-com=0
+comp=0
 
 def load_caffe_models():
     age_net = cv2.dnn.readNetFromCaffe('deploy_age.prototxt','age_net.caffemodel')
@@ -79,8 +79,9 @@ def main():
         age_preds = age_net.forward()
         age2 = age_list[age_preds[0].argmax()]
         print("Mixing Result Age Range : " + age2)
-    comp=0
-    com=compare(gender1, gender2, age1, age2, comp)
+    global comp
+    comp=comp
+    comp=compare(gender1, gender2, age1, age2, comp)
 
 if __name__ == "__main__":
     main()
