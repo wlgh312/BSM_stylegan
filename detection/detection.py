@@ -11,7 +11,6 @@ MODEL_MEAN_VALUES = (78.42633776603, 87.7689143744, 114.895847746)
 age_list = ['(0, 2)', '(4, 6)', '(8, 12)', '(15, 20)', '(25, 32)', '(38, 43)', '(48, 53)', '(60, 100)']
 gender_list = ['Male', 'Female']
 
-comp=0
 
 def load_caffe_models():
     age_net = cv2.dnn.readNetFromCaffe('deploy_age.prototxt','age_net.caffemodel')
@@ -21,9 +20,6 @@ def load_caffe_models():
 def video_detector(age_net, gender_net):
     font = cv2.FONT_HERSHEY_SIMPLEX
 
-def com_result():
-    print(comp)
-
 def compare(gender1, gender2, age1, age2, comp):
     if gender1==gender2 and age1==age2:
         comp=0
@@ -31,8 +27,7 @@ def compare(gender1, gender2, age1, age2, comp):
     else:
         comp=1
         print("Different! : {}".format(comp))
-
-
+    return comp
 def main():
     parser = argparse.ArgumentParser(description='Find latent representation of reference images using perceptual loss')
     parser.add_argument('dst_image', help='Name of a original image')
@@ -83,8 +78,9 @@ def main():
         age_preds = age_net.forward()
         age2 = age_list[age_preds[0].argmax()]
         print("Mixing Result Age Range : " + age2)
-
-    compare(gender1, gender2, age1, age2, comp)
+    comp=0
+    comp=compare(gender1, gender2, age1, age2, comp)
 
 if __name__ == "__main__":
     main()
+
