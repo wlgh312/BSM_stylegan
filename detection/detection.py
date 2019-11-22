@@ -29,6 +29,7 @@ def compare(gender1, gender2, age1, age2, comp):
         comp=1
         print("Different! : {}".format(comp))
     return comp
+
 def main():
     parser = argparse.ArgumentParser(description='Find latent representation of reference images using perceptual loss')
     parser.add_argument('dst_image', help='Name of a original image')
@@ -79,10 +80,12 @@ def main():
         age_preds = age_net.forward()
         age2 = age_list[age_preds[0].argmax()]
         print("Mixing Result Age Range : " + age2)
-    global comp
-    comp=comp
+    comp=0
     comp=compare(gender1, gender2, age1, age2, comp)
+    return comp
 
-if __name__ == "__main__":
-    main()
+
+#if __name__ == "__main__":
+    #main()
+
 
