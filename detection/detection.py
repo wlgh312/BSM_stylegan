@@ -4,6 +4,7 @@ import dlib
 import face_recognition
 import os
 import argparse
+import easydict
 
 
 MODEL_MEAN_VALUES = (78.42633776603, 87.7689143744, 114.895847746)
@@ -34,8 +35,7 @@ def main():
     parser = argparse.ArgumentParser(description='Find latent representation of reference images using perceptual loss')
     parser.add_argument('dst_image', help='Name of a original image')
     parser.add_argument('mix_image', help='Name of a mixing result image')
-    #args, other_args = parser.parse_known_args()
-    args, other_args = parser.parse_args(['my', 'list', 'of', 'strings'])
+    args, other_args = parser.parse_known_args()
     known_image = face_recognition.load_image_file(args.dst_image)
     unknown_image = face_recognition.load_image_file(args.mix_image)
     age_net, gender_net = load_caffe_models()
@@ -82,10 +82,12 @@ def main():
         print("Mixing Result Age Range : " + age2)
     comp=0
     comp=compare(gender1, gender2, age1, age2, comp)
-    return comp
+    easy = easydict.EasyDict({
+        'easy_comp':comp
+    })
+    #return comp
 
-
-#if __name__ == "__main__":
-main()
+if __name__ == "__main__":
+    main()
 
 
