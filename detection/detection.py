@@ -85,7 +85,7 @@ def main():
     global comp
     comp=comp
     comp=compare(gender1, gender2, age1, age2, comp)
-    #return comp
+    return comp
 
 #if __name__ == "__main__":
 main()
