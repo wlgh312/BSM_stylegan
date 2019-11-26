@@ -82,7 +82,8 @@ def main():
         age_preds = age_net.forward()
         age2 = age_list[age_preds[0].argmax()]
         print("Mixing Result Age Range : " + age2)
-    comp=0
+    global comp
+    comp=comp
     comp=compare(gender1, gender2, age1, age2, comp)
     #return comp
 
