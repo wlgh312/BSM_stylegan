@@ -34,7 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description='Find latent representation of reference images using perceptual loss')
     parser.add_argument('dst_image', help='Name of a original image')
     parser.add_argument('mix_image', help='Name of a mixing result image')
-    args, other_args = parser.parse_known_args()
+    args, other_args = parser.parse_known_args(['dst_image', 'mix_image'])
 
     known_image = face_recognition.load_image_file(args.dst_image)
     unknown_image = face_recognition.load_image_file(args.mix_image)
