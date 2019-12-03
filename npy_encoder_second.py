@@ -70,6 +70,9 @@ def main():
   parser.add_argument('--image_size', default=256, help='Size of images for perceptual model', type=int)
   parser.add_argument('--lr', default=0.01, help='Learning rate for perceptual model', type=float)
   parser.add_argument('--iterations', default=500, help='Number of optimization steps for each batch', type=int)
+
+  parser.add_argument('--use_lpips_loss', default=100, help='Use LPIPS perceptual loss; 0 to disable, > 0 to scale.', type=float)
+
   #Generator params
   parser.add_argument('--randomize_noise', default=False, help='Add noise to dlatents during optimization', type=bool)
   parser.add_argument('--tile_dlatents', default=False, help='Tile dlatents to use a single vector at each scale', type=bool)
@@ -101,9 +104,13 @@ def main():
   tflib.init_tf()
   with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
     generator_network, discriminator_network, Gs_network = pickle.load(f)
-    
+
+  perc_model = None
+  if (args.use_lpips_loss > 0.00000001):
+      with dnnlib.util.open_url('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2', cache_dir=config.cache_dir) as f:
+          perc_model =  pickle.load(f)
   generator = Generator(Gs_network, args.batch_size, clipping_threshold=args.clipping_threshold, tiled_dlatent=args.tile_dlatents, model_res=args.model_res, randomize_noise=args.randomize_noise)
-  perceptual_model = PerceptualModel(args.image_size, layer=9, batch_size=args.batch_size)
+  perceptual_model = PerceptualModel(args, perc_model=perc_model, batch_size=args.batch_size)
   perceptual_model.build_perceptual_model(generator)#.generated_image
 
   for images_batch in tqdm(split_to_batches(ref_images, args.batch_size), total=len(ref_images)//args.batch_size):
