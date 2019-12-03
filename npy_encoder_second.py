@@ -99,7 +99,7 @@ def main():
   with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
     generator_network, discriminator_network, Gs_network = pickle.load(f)
     
-  generator = Generator(Gs_network, args.batch_size, clipping_threshold=args.clipping_threshold, tiled_dlatent=args.tile_dlatents, model_res=args.model_res, randomize_noise=args.randomize_noise)
+  generator = Generator(Gs_network, args.batch_size, randomize_noise=args.randomize_noise)
   perceptual_model = PerceptualModel(args.image_size, layer=9, batch_size=args.batch_size)
   perceptual_model.build_perceptual_model(generator)#.generated_image
 
