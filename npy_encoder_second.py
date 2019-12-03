@@ -61,6 +61,7 @@ def main():
   parser.add_argument('aligned_dir', help='Directory with a aligned image')
   parser.add_argument('generated_images_dir', help='Directory for storing generated images')
   parser.add_argument('dlatent_dir', help='Directory for storing dlatent representations')
+  parser.add_argument('--data_dir', default='data', help='Directory for storing optional models')
   parser.add_argument('--batch_size', default=1, help='Batch size for generator and perceptual model', type=int)
 
   #Perceptual model params
