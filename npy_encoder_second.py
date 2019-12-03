@@ -69,6 +69,7 @@ def main():
   #Perceptual model params
   parser.add_argument('--image_size', default=256, help='Size of images for perceptual model', type=int)
   parser.add_argument('--lr', default=0.01, help='Learning rate for perceptual model', type=float)
+  parser.add_argument('--decay_rate', default=0.9, help='Decay rate for learning rate', type=float)
   parser.add_argument('--iterations', default=500, help='Number of optimization steps for each batch', type=int)
 
   parser.add_argument('--use_lpips_loss', default=100, help='Use LPIPS perceptual loss; 0 to disable, > 0 to scale.', type=float)
