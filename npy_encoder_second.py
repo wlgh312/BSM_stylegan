@@ -61,23 +61,14 @@ def main():
   parser.add_argument('aligned_dir', help='Directory with a aligned image')
   parser.add_argument('generated_images_dir', help='Directory for storing generated images')
   parser.add_argument('dlatent_dir', help='Directory for storing dlatent representations')
-  parser.add_argument('--data_dir', default='data', help='Directory for storing optional models')
-  parser.add_argument('--mask_dir', default='masks', help='Directory for storing optional masks')
-  parser.add_argument('--model_res', default=1024, help='The dimension of images in the StyleGAN model', type=int)
   parser.add_argument('--batch_size', default=1, help='Batch size for generator and perceptual model', type=int)
 
   #Perceptual model params
   parser.add_argument('--image_size', default=256, help='Size of images for perceptual model', type=int)
   parser.add_argument('--lr', default=0.01, help='Learning rate for perceptual model', type=float)
-  parser.add_argument('--decay_rate', default=0.9, help='Decay rate for learning rate', type=float)
   parser.add_argument('--iterations', default=500, help='Number of optimization steps for each batch', type=int)
-
-  parser.add_argument('--use_lpips_loss', default=100, help='Use LPIPS perceptual loss; 0 to disable, > 0 to scale.', type=float)
-
   #Generator params
   parser.add_argument('--randomize_noise', default=False, help='Add noise to dlatents during optimization', type=bool)
-  parser.add_argument('--tile_dlatents', default=False, help='Tile dlatents to use a single vector at each scale', type=bool)
-  parser.add_argument('--clipping_threshold', default=2.0, help='Stochastic clipping of gradient values outside of this threshold', type=float)
   args, other_args = parser.parse_known_args()
 
   #encoder_main
@@ -106,12 +97,8 @@ def main():
   with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
     generator_network, discriminator_network, Gs_network = pickle.load(f)
 
-  perc_model = None
-  if (args.use_lpips_loss > 0.00000001):
-      with dnnlib.util.open_url('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2', cache_dir=config.cache_dir) as f:
-          perc_model =  pickle.load(f)
   generator = Generator(Gs_network, args.batch_size, clipping_threshold=args.clipping_threshold, tiled_dlatent=args.tile_dlatents, model_res=args.model_res, randomize_noise=args.randomize_noise)
-  perceptual_model = PerceptualModel(args, perc_model=perc_model, batch_size=args.batch_size)
+  perceptual_model = PerceptualModel(args.image_size, layer=9, batch_size=args.batch_size)
   perceptual_model.build_perceptual_model(generator)#.generated_image
 
   for images_batch in tqdm(split_to_batches(ref_images, args.batch_size), total=len(ref_images)//args.batch_size):
