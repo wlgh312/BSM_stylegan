@@ -88,8 +88,6 @@ def main():
   if len(ref_images) == 0:
     raise Exception('%s is empty' % args.aligned_dir)
 
-  os.makedirs(args.data_dir, exist_ok=True)
-  os.makedirs(args.mask_dir, exist_ok=True)
   os.makedirs(args.generated_images_dir, exist_ok=True)
   os.makedirs(args.dlatent_dir, exist_ok = True)
   
