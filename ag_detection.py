@@ -2,7 +2,7 @@ from os.path import exists
 from wheel.pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag
 
 platform = '{}{}-{}'.format(get_abbr_impl(), get_impl_ver(), get_abi_tag())
-cuda_output = !ldconfig -p|grep cudart.so|sed -e 's/.*\.\([0-9]*\)\.\([0-9]*\)$/cu\10/'
+#cuda_output = !ldconfig -p|grep cudart.so|sed -e 's/.*\.\([0-9]*\)\.\([0-9]*\)$/cu\10/'
 accelerator = cuda_output[0] if exists('/dev/nvidia0') else 'cpu'
 
 #!pip install -q http://download.pytorch.org/whl/{accelerator}/torch-1.0.0-{platform}-linux_x86_64.whl torchvision
@@ -18,9 +18,9 @@ import torch.nn.functional as F
 import torchvision.utils as utils
 from torch.utils.data import Dataset, DataLoader
 
-!wget --user adiencedb --password adience http://www.cslab.openu.ac.il/download/adiencedb/AdienceBenchmarkOfUnfilteredFacesForGenderAndAgeClassification/aligned.tar.gz -P "/content/gdrive/My Drive/AgeGenderClassification/data"
+#!wget --user adiencedb --password adience http://www.cslab.openu.ac.il/download/adiencedb/AdienceBenchmarkOfUnfilteredFacesForGenderAndAgeClassification/aligned.tar.gz -P "/content/gdrive/My Drive/AgeGenderClassification/data"
 
-!tar xvzf "/content/gdrive/My Drive/AgeGenderClassification/data/aligned.tar.gz" -C "/content/gdrive/My Drive/AgeGenderClassification/data/"
+#!tar xvzf "/content/gdrive/My Drive/AgeGenderClassification/data/aligned.tar.gz" -C "/content/gdrive/My Drive/AgeGenderClassification/data/"
 
 PATH_TO_FOLDS = "/content/gdrive/My Drive/AgeGenderClassification/data/train_val_txt_files_per_fold"
 PATH_TO_DATA = "/content/gdrive/My Drive/AgeGenderClassification/data"
@@ -52,7 +52,7 @@ class AdienceDataset(Dataset):
     image = Image.open(self.root_dir + '/'+img_name)
     if self.transform:
       image = self.transform(image)
-    return {'image':image, 'lagel':label}
+    return {'image':image, 'label':label}
 
   transforms_list = [
     transforms.Resize(256),
