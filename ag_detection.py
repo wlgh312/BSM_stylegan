@@ -114,15 +114,26 @@ mapping = {
     9: 'female'
 }
 
-def test_on_a_class(c, image_tensor):
+def test_on_a_class_age(image_tensor):
     with torch.no_grad():
         net = Net().to(device)
-        net.load_state_dict(torch.load(f'{PATH_TO_MODELS}/{c}.pt'))
+        net.load_state_dict(torch.load(f'{PATH_TO_MODELS}/age.pt'))
         net.eval()
         output = net(image_tensor)
         output = torch.max(output, 1)[1].to(device)
-        result = f'{c} = {mapping[output.item()]}'
+        #result = f'{c} = {mapping[output.item()]}'
+        result = mapping[output.item()]
+    return result
 
+def test_on_a_class_gender(image_tensor):
+    with torch.no_grad():
+        net = Net().to(device)
+        net.load_state_dict(torch.load(f'{PATH_TO_MODELS}/gender.pt'))
+        net.eval()
+        output = net(image_tensor)
+        output = torch.max(output, 1)[1].to(device)
+        #result = f'{c} = {mapping[output.item()]}'
+        result = mapping[output.item()]
     return result
 
 def test(path):
@@ -131,5 +142,7 @@ def test(path):
     image = transforms.Compose(transforms_dict['test'][0])(image)
     image.unsqueeze_(0)
     image = image.to(device)
-    print(test_on_a_class('age', image))
-    print(test_on_a_class('gender', image))
+    print("age = ", test_on_a_class_age(image))
+    print("gender = ", test_on_a_class_gender(image))
+    #print(test_on_a_class('age', image))
+    #print(test_on_a_class('gender', image))
