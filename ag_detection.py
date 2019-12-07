@@ -12,6 +12,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from shutil import copyfile
 
+age=0
+gender='none'
+
 transforms_list = [
     transforms.Resize(256),
     transforms.CenterCrop(227),
@@ -126,6 +129,7 @@ def test_on_a_class_age(image_tensor):
     return result
 
 def test_on_a_class_gender(image_tensor):
+
     with torch.no_grad():
         net = Net().to(device)
         net.load_state_dict(torch.load(f'{PATH_TO_MODELS}/gender.pt'))
@@ -144,5 +148,9 @@ def test(path):
     image = image.to(device)
     print("age = ", test_on_a_class_age(image))
     print("gender = ", test_on_a_class_gender(image))
+    global age
+    global gender
+    age = test_on_a_class_age(image)
+    gender = test_on_a_class_gender(image)
     #print(test_on_a_class('age', image))
     #print(test_on_a_class('gender', image))
