@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+﻿# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
 #
 # This work is licensed under the Creative Commons Attribution-NonCommercial
 # 4.0 International License. To view a copy of this license, visit
@@ -329,36 +329,6 @@ class Network:
         names = [name for name in self.trainables.keys() if name in src_net.trainables]
         tfutil.set_vars(tfutil.run({self.vars[name]: src_net.vars[name] for name in names}))
 
-    def copy_compatible_trainables_from(self, src_net: "Network") -> None:
-        """Copy the compatible values of all trainable variables from the given network, including sub-networks"""
-        names = []
-        for name in self.trainables.keys():
-            if name not in src_net.trainables:
-                print("Not restoring (not present):     {}".format(name))
-            elif self.trainables[name].shape != src_net.trainables[name].shape:
-                print("Not restoring (different shape): {}".format(name))
-
-            if name in src_net.trainables and self.trainables[name].shape == src_net.trainables[name].shape:
-                names.append(name)
-
-        tfutil.set_vars(tfutil.run({self.vars[name]: src_net.vars[name] for name in names}))
-
-    def apply_swa(self, src_net, epoch):
-        """Perform stochastic weight averaging on the compatible values of all trainable variables from the given network, including sub-networks"""
-        names = []
-        for name in self.trainables.keys():
-            if name not in src_net.trainables:
-                print("Not restoring (not present):     {}".format(name))
-            elif self.trainables[name].shape != src_net.trainables[name].shape:
-                print("Not restoring (different shape): {}".format(name))
-
-            if name in src_net.trainables and self.trainables[name].shape == src_net.trainables[name].shape:
-                names.append(name)
-
-        scale_new_data = 1.0 / (epoch + 1)
-        scale_moving_average = (1.0 - scale_new_data)
-        tfutil.set_vars(tfutil.run({self.vars[name]: (src_net.vars[name] * scale_new_data + self.vars[name] * scale_moving_average) for name in names}))
-
     def convert(self, new_func_name: str, new_name: str = None, **new_static_kwargs) -> "Network":
         """Create new network with the given parameters, and copy all variables from this network."""
         if new_name is None:
@@ -390,7 +360,6 @@ class Network:
             minibatch_size: int = None,
             num_gpus: int = 1,
             assume_frozen: bool = False,
-            custom_inputs=None,
             **dynamic_kwargs) -> Union[np.ndarray, Tuple[np.ndarray, ...], List[np.ndarray]]:
         """Run this network for the given NumPy array(s), and return the output(s) as NumPy array(s).
 
@@ -407,7 +376,6 @@ class Network:
             num_gpus:           Number of GPUs to use.
             assume_frozen:      Improve multi-GPU performance by assuming that the trainable parameters will remain changed between calls.
             dynamic_kwargs:     Additional keyword arguments to be passed into the network build function.
-            custom_inputs:      Allow to use another Tensor as input instead of default Placeholders
         """
         assert len(in_arrays) == self.num_inputs
         assert not all(arr is None for arr in in_arrays)
@@ -431,14 +399,9 @@ class Network:
         # Build graph.
         if key not in self._run_cache:
             with tfutil.absolute_name_scope(self.scope + "/_Run"), tf.control_dependencies(None):
-                if custom_inputs is not None:
-                    with tf.device("/gpu:0"):
-                        in_expr = [input_builder(name) for input_builder, name in zip(custom_inputs, self.input_names)]
-                        in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
-                else:
-                    with tf.device("/cpu:0"):
-                        in_expr = [tf.placeholder(tf.float32, name=name) for name in self.input_names]
-                        in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
+                with tf.device("/cpu:0"):
+                    in_expr = [tf.placeholder(tf.float32, name=name) for name in self.input_names]
+                    in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
 
                 out_split = []
                 for gpu in range(num_gpus):
@@ -549,7 +512,7 @@ class Network:
 
         for layer_name, layer_output, layer_trainables in self.list_layers():
             num_params = sum(np.prod(tfutil.shape_to_list(var.shape)) for var in layer_trainables)
-            weights = [var for var in layer_trainables if var.name.endswith("/weight:0") or var.name.endswith("/weight_1:0")]
+            weights = [var for var in layer_trainables if var.name.endswith("/weight:0")]
             weights.sort(key=lambda x: len(x.name))
             if len(weights) == 0 and len(layer_trainables) == 1:
                 weights = layer_trainables
