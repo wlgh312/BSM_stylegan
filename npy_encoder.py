@@ -137,8 +137,12 @@ def main():
   os.makedirs(args.video_dir, exist_ok=True)
   
   tflib.init_tf()
-  with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
-    generator_network, discriminator_network, Gs_network = pickle.load(f)
+  #with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
+    #generator_network, discriminator_network, Gs_network = pickle.load(f)
+  ffhq='/content/gdrive/My Drive/data/karras2019stylegan-ffhq-1024x1024.pkl'
+  with open(ffhq, 'rb') as f:
+      _generator_network, discriminator_network, Gs_network = pickle.load(f)
+
     
   generator = Generator(Gs_network, args.batch_size, clipping_threshold=args.clipping_threshold, tiled_dlatent=args.tile_dlatents, model_res=args.model_res, randomize_noise=args.randomize_noise)
   if (args.dlatent_avg != ''):
